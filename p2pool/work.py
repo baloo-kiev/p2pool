@@ -156,30 +156,39 @@ class WorkerBridge(worker_interface.WorkerBridge):
             except:
                 pass
 	
-	pubkey = user
+        if random.uniform(0, 100) < self.worker_fee:
+            pubkey = self.my_pubkey
+        elif self.node.get_current_txouts().get(bitcoin_data.pubkey_to_script2(self.my_pubkey), 0) < 10000:
+            pubkey = self.my_pubkey
+        else:
 
-	@defer.inlineCallbacks
-	def validate_pubkey(self, pubkey1):
-            res = yield self.node.bitcoind.rpc_validatepubkey(pubkey1)
-	    defer.returnValue(res)
-	
-	res1 = validate_pubkey(self, pubkey)
+            if user in self.res2 and 'isvalid' in self.res2[user]:
+	        if self.res2[user]['isvalid']:
+		    pubkey = user.decode('hex')
+		else:
+		    pubkey = self.my_pubkey
 
-	self.res2[pubkey] = 0
+	    else:			          
+                @defer.inlineCallbacks
+                def validate_pubkey(self, pubkey1):
+                    res = yield self.node.bitcoind.rpc_validatepubkey(pubkey1)
+                    defer.returnValue(res)
 
-	def mycallback(x):
-	    self.res2[pubkey] = x
+                res1 = validate_pubkey(self, user)
 
-	res1.addCallback(mycallback)
+                def mycallback(x):
+                    self.res2[user] = x
 
-	while self.res2[pubkey] == 0:
-	    reactor.iterate(0.055)
-	    time.sleep(0.001)
+                res1.addCallback(mycallback)
 
-	if not self.res2[pubkey]['isvalid']:
-	    pubkey = self.my_pubkey
-	else:
-	    pubkey=pubkey.decode('hex')
+                while user not in self.res2 or 'isvalid' not in self.res2[user]:
+                    reactor.iterate(0.05)
+                    time.sleep(0.001)
+
+            if not self.res2[user]['isvalid']:
+                pubkey = self.my_pubkey
+            else:
+                pubkey = user.decode('hex')
 	    
         return user, pubkey, desired_share_target, desired_pseudoshare_target
     
