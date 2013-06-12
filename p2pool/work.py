@@ -162,13 +162,8 @@ class WorkerBridge(worker_interface.WorkerBridge):
             pubkey = self.my_pubkey
         else:
 
-            if user in self.res2 and 'isvalid' in self.res2[user]:
-	        if self.res2[user]['isvalid']:
-		    pubkey = user.decode('hex')
-		else:
-		    pubkey = self.my_pubkey
+	    if user not in self.res2 or 'isvalid' not in self.res2[user]:
 
-	    else:			          
                 @defer.inlineCallbacks
                 def validate_pubkey(self, pubkey1):
                     res = yield self.node.bitcoind.rpc_validatepubkey(pubkey1)
