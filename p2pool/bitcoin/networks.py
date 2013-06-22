@@ -163,6 +163,45 @@ nets = dict(
         DUMB_SCRYPT_DIFF=1,
     ),
 
+    bytecoin=math.Object(
+        P2P_PREFIX='f9beef69'.decode('hex'),
+	P2P_PORT=6333,
+	ADDRESS_VERSION=18,
+	RPC_PORT=6332,
+	RPC_CHECK=defer.inlineCallbacks(lambda bitcoind: defer.returnValue(
+	    'bitcoinaddress' in (yield bitcoind.rpc_help()) and
+	    not (yield bitcoind.rpc_getinfo())['testnet']
+	)),
+	SUBSIDY_FUNC=lambda height: 50*100000000 >> (height + 1)//210000,
+	POW_FUNC=data.hash256,
+	BLOCK_PERIOD=600, # s
+	SYMBOL='BTE',
+	CONF_FILE_FUNC=lambda: os.path.join(os.path.join(os.environ['APPDATA'], 'Bytecoin') if platform.system() == 'Windows' else os.path.expanduser('~/Library/Application Support/Bytecoin/') if platform.system() == 'Darwin' else os.path.expanduser('~/.bytecoin'), 'bytecoin.conf'),
+	BLOCK_EXPLORER_URL_PREFIX='http://bte.cryptocoinexplorer.com/block/',
+	ADDRESS_EXPLORER_URL_PREFIX='http://bte.cryptocoinexplorer.com/address/',
+	SANE_TARGET_RANGE=(2**256//2**32//1000 - 1, 2**256//2**32 - 1),
+	DUMB_SCRYPT_DIFF=1,
+    ),
+    bytecoin_testnet=math.Object(
+        P2P_PREFIX='0b220314'.decode('hex'), #
+	P2P_PORT=16333,
+	ADDRESS_VERSION=111,
+	RPC_PORT=16332,
+	RPC_CHECK=defer.inlineCallbacks(lambda bitcoind: defer.returnValue(
+	    'bitcoinaddress' in (yield bitcoind.rpc_help()) and
+	    (yield bitcoind.rpc_getinfo())['testnet']
+	)),
+	SUBSIDY_FUNC=lambda height: 50*100000000 >> (height + 1)//210000,
+	POW_FUNC=data.hash256,
+	BLOCK_PERIOD=600, # s
+	SYMBOL='tBTE',
+	CONF_FILE_FUNC=lambda: os.path.join(os.path.join(os.environ['APPDATA'], 'Bytecoin') if platform.system() == 'Windows' else os.path.expanduser('~/Library/Application Support/Bytecoin/') if platform.system() == 'Darwin' else os.path.expanduser('~/.bytecoin'), 'bytecoin.conf'),
+	BLOCK_EXPLORER_URL_PREFIX='http://null/',
+	ADDRESS_EXPLORER_URL_PREFIX='http://null/',
+	SANE_TARGET_RANGE=(2**256//2**32//1000 - 1, 2**256//2**32 - 1),
+	DUMB_SCRYPT_DIFF=1,
+    ),
+
 )
 for net_name, net in nets.iteritems():
     net.NAME = net_name

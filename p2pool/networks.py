@@ -119,6 +119,43 @@ nets = dict(
         VERSION_CHECK=lambda v: True,
     ),
 
+    bytecoin=math.Object(
+        PARENT=networks.nets['bytecoin'],
+	SHARE_PERIOD=10, # seconds
+	CHAIN_LENGTH=24*60*60//10, # shares
+	REAL_CHAIN_LENGTH=24*60*60//10, # shares
+	TARGET_LOOKBEHIND=200, # shares
+	SPREAD=3, # blocks
+	IDENTIFIER='fc70035cba11bc6f'.decode('hex'),
+	PREFIX='2472ef18ba1cd37b'.decode('hex'),
+	P2P_PORT=38433,
+	MIN_TARGET=0,
+	MAX_TARGET=2**256//2**32 - 1,
+	PERSIST=False,
+	WORKER_PORT=38432,
+	BOOTSTRAP_ADDRS='78.27.191.182'.split(' '),
+	ANNOUNCE_CHANNEL='#p2pool',
+	VERSION_CHECK=lambda v: 80101 <= v,
+    ),
+    bytecoin_testnet=math.Object(
+        PARENT=networks.nets['bytecoin_testnet'],
+	SHARE_PERIOD=10, # seconds
+	CHAIN_LENGTH=60*60//10, # shares
+	REAL_CHAIN_LENGTH=60*60//10, # shares
+	TARGET_LOOKBEHIND=200, # shares
+	SPREAD=3, # blocks
+	IDENTIFIER='5fc2ba1d4f0d6bfb'.decode('hex'),
+	PREFIX='3f60ba115036f441'.decode('hex'),
+	P2P_PORT=48433,
+	MIN_TARGET=0,
+	MAX_TARGET=2**256//2**32 - 1,
+	PERSIST=False,
+	WORKER_PORT=48432,
+	BOOTSTRAP_ADDRS='78.27.191.182'.split(' '),
+	ANNOUNCE_CHANNEL='#p2pool-alt',
+	VERSION_CHECK=lambda v: 80101 <= v,
+    ),
+
 )
 for net_name, net in nets.iteritems():
     net.NAME = net_name
