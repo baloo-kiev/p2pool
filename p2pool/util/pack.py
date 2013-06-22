@@ -322,6 +322,5 @@ class FixedStrType(Type):
     
     def write(self, file, item):
         if len(item) != self.length:
-            print len(item), ' ', self.length
             raise ValueError('incorrect length item!')
         return file, item

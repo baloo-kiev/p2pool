@@ -92,7 +92,6 @@ address_type = pack.ComposedType([
 
 tx_type = pack.ComposedType([
     ('version', pack.IntType(32)),
-    ('timestamp', pack.IntType(32)),
     ('tx_ins', pack.ListType(pack.ComposedType([
         ('previous_output', pack.PossiblyNoneType(dict(hash=0, index=2**32 - 1), pack.ComposedType([
             ('hash', pack.IntType(256)),
@@ -131,7 +130,6 @@ block_header_type = pack.ComposedType([
 block_type = pack.ComposedType([
     ('header', block_header_type),
     ('txs', pack.ListType(tx_type)),
-    ('signature', pack.VarStrType()),
 ])
 
 # merged mining
@@ -260,18 +258,7 @@ def pubkey_to_script2(pubkey):
     return (chr(len(pubkey)) + pubkey) + '\xac'
 
 def pubkey_hash_to_script2(pubkey_hash):
-#    print '\x76\xa9' + ('\x14' + pack.IntType(160).pack(pubkey_hash)) + '\x88\xac'
     return '\x76\xa9' + ('\x14' + pack.IntType(160).pack(pubkey_hash)) + '\x88\xac'
-
-def script2_to_pubkey(script2):
-    try:
-        pubkey = script2[1:-1]
-        script2_test = pubkey_to_script2(pubkey)
-    except:
-        pass
-    else:
-        if script2_test == script2:
-            return pubkey
 
 def script2_to_address(script2, net):
     try:
